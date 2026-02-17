@@ -9,6 +9,9 @@ def main():
     # Create the game window with defined width and height
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 
+    clock = pygame.time.Clock()
+    dt = 0
+
     # Print initial information to the console for debugging
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
     print(f"Screen width: {SCREEN_WIDTH}")
@@ -22,16 +25,27 @@ def main():
         # Call a function to log or display the current game state
         log_state()
 
+        # 1. Handle events (keyboard, mouse, window close, etc.)
         # Check all events that have happened since the last frame
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
         
+        # 2. Update game logic (move player, update asteroids, check collisions, etc.)
+        #pass
+
+        # 3. Draw everything on the screen (background, player, asteroids, etc.)
         # Fill the entire screen with black
         screen.fill("black")
 
         # Update the display to show everything we just drew
         pygame.display.flip()
+
+
+        # 4. Control FPS
+        miliseconds = clock.tick(60) #Time of the last frame in ms
+        dt = miliseconds / 1000
+
 
 
 if __name__ == "__main__":
