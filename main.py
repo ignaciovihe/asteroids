@@ -40,6 +40,7 @@ def main():
         
         # 2. Update game logic (move player, update asteroids, check collisions, etc.)
         #pass
+        player.update(dt)
 
         # 3. Draw everything on the screen (background, player, asteroids, etc.)
         # Fill the entire screen with black
