@@ -1,4 +1,4 @@
-from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED
+from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED, PLAYER_SPEED
 from circleshape import CircleShape
 import pygame
 
@@ -41,6 +41,21 @@ class Player(CircleShape):
         """
         self.rotation += dt * PLAYER_TURN_SPEED
 
+    def move(self, dt):
+        """
+        Move the player based on elapsed time.
+
+        Args:
+            dt (float): Time passed since the last frame (in seconds).
+
+        Returns:
+            None: This method updates the player's position in place.
+        """
+        unit_vector = pygame.Vector2(0,1)                               # Start with a unit vector
+        rotated_vector = unit_vector.rotate(self.rotation)              # Rotate the init vecto to de currect rotation of the player.
+        rotated_with_speed_vector = rotated_vector * PLAYER_SPEED * dt  # Add the speed to de rotated vector
+        self.position += rotated_with_speed_vector                      # Update the player's position with the vector
+
 
     def update(self, dt):
         
@@ -50,3 +65,7 @@ class Player(CircleShape):
             self.rotate(dt * -1)# I reverse dt to rotate left
         if keys[pygame.K_d]:
             self.rotate(dt)
+        if keys[pygame.K_s]:
+            self.move(dt * -1)# I reverse dt to move backwards
+        if keys[pygame.K_w]:
+            self.move(dt)
