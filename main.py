@@ -16,6 +16,12 @@ def main():
     # Delta time (time since last frame), initialized to 0
     dt = 0
 
+    # Create two groups of sprites
+    updatable = pygame.sprite.Group()   #this will hold all the objects that can be updated
+    drawable = pygame.sprite.Group()    #this will hold all the objects that can be drawn
+
+    Player.containers = (updatable, drawable) # Create a class attribute with the two groups the Player will be added to
+
     # Create the player sprite at the center of the screen
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
@@ -40,14 +46,18 @@ def main():
         
         # 2. Update game logic (move player, update asteroids, check collisions, etc.)
         #pass
-        player.update(dt)
+        #player.update(dt) <-- Previous step withot groups
+        updatable.update(dt)
 
         # 3. Draw everything on the screen (background, player, asteroids, etc.)
         # Fill the entire screen with black
         screen.fill("black")
 
         #Draw de player as a triangle.
-        player.draw(screen)
+        #player.draw(screen) <-- Previous step withot groups
+        for sprite in drawable: # we call draw() for every sprite within the group drawable.
+            sprite.draw(screen)  
+                                # We cannot use drawable.draw() because Group.draw() does not call each sprite's draw() method.
 
         # Update the display to show everything we just drew
         pygame.display.flip()
