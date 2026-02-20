@@ -2,6 +2,8 @@ import pygame
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from logger import log_state
 from player import Player
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
 
 def main():
     # Initialize Pygame (loads internal modules and prepares everything)
@@ -16,14 +18,20 @@ def main():
     # Delta time (time since last frame), initialized to 0
     dt = 0
 
-    # Create two groups of sprites
+    # Create groups of sprites
     updatable = pygame.sprite.Group()   #this will hold all the objects that can be updated
     drawable = pygame.sprite.Group()    #this will hold all the objects that can be drawn
+    asteroids = pygame.sprite.Group()   #this will hold all the objects asteoids
 
     Player.containers = (updatable, drawable) # Create a class attribute with the two groups the Player will be added to
+    Asteroid.containers = (updatable, drawable, asteroids)
+    AsteroidField.containers = (updatable)
 
     # Create the player sprite at the center of the screen
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    # Create the asteroid field sprite
+    asteroids_field = AsteroidField()
+
 
     # Print initial information to the console for debugging
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
