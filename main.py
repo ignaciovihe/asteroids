@@ -1,6 +1,7 @@
 import pygame
+import sys
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
-from logger import log_state
+from logger import log_state, log_event
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
@@ -56,6 +57,12 @@ def main():
         #pass
         #player.update(dt) <-- Previous step withot groups
         updatable.update(dt)
+
+        for object in asteroids:
+            if player.collides_with(object):
+                log_event("player_hit")
+                print("Game over!")
+                sys.exit()
 
         # 3. Draw everything on the screen (background, player, asteroids, etc.)
         # Fill the entire screen with black
