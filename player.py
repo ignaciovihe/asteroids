@@ -9,6 +9,7 @@ class Player(CircleShape):
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
+        self.shoot_cooldown = 0
  
     def triangle(self):
         """
@@ -63,16 +64,24 @@ class Player(CircleShape):
         Creates a new Shot instance at the player's current position,
         sets its velocity based on the player's rotation and the defined
         shooting speed, and adds it to the appropriate sprite groups.
-        
-        This method only initializes the shot; movement is handled in
-        the Shot.update(dt) method using the shot's velocity.
+
+        This method respects the player's shooting cooldown: a shot
+        is only created if the cooldown timer has expired. Movement
+        of the shot is handled in the Shot.update(dt) method using
+        the shot's velocity.
         """
-        shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
-        unit_vector = pygame.Vector2(0,1)
-        rotated_vector = unit_vector.rotate(self.rotation)
-        shot.velocity = rotated_vector * PLAYER_SHOOT_SPEED 
+
+        if self.shoot_cooldown <= 0:
+
+            self.shoot_cooldown = PLAYER_SHOOT_COOLDOWN_SECONDS
+            shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
+            unit_vector = pygame.Vector2(0,1)
+            rotated_vector = unit_vector.rotate(self.rotation)
+            shot.velocity = rotated_vector * PLAYER_SHOOT_SPEED 
     
     def update(self, dt):
+
+        self.shoot_cooldown -= dt #update shooting_cooldown
         
         keys = pygame.key.get_pressed()
 
