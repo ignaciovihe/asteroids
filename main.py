@@ -72,7 +72,7 @@ def main():
                 if shot.collides_with(object):
                     log_event("asteroid_shot")
                     shot.kill() #It removes the "killed" object from all of its groups so that the engine stops updating and drawing it.
-                    object.kill()
+                    object.split()
 
         # 3. Draw everything on the screen (background, player, asteroids, etc.)
         # Fill the entire screen with black
