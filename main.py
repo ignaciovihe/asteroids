@@ -61,11 +61,18 @@ def main():
         #player.update(dt) <-- Previous step withot groups
         updatable.update(dt)
 
-        for object in asteroids:
+        for object in asteroids: # check collisions between player and asteroids
             if player.collides_with(object):
                 log_event("player_hit")
                 print("Game over!")
                 sys.exit()
+
+        for object in asteroids: # check collisions between shots and asteroids
+            for shot in shots:
+                if shot.collides_with(object):
+                    log_event("asteroid_shot")
+                    shot.kill() #It removes the "killed" object from all of its groups so that the engine stops updating and drawing it.
+                    object.kill()
 
         # 3. Draw everything on the screen (background, player, asteroids, etc.)
         # Fill the entire screen with black
