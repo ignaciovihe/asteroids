@@ -1,5 +1,5 @@
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 600
 
 
 LINE_WIDTH = 2 #the width of the lines that draw the sprites
