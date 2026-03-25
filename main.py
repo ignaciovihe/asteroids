@@ -6,6 +6,7 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
+from score_manager import ScoreManager
 
 def main():
     # Initialize Pygame (loads internal modules and prepares everything)
@@ -36,6 +37,9 @@ def main():
     # Create the asteroid field sprite
     asteroids_field = AsteroidField()
 
+    #Create the ScoreManager
+    score_manager = ScoreManager()
+
 
     # Print initial information to the console for debugging
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
@@ -65,12 +69,15 @@ def main():
             if player.collides_with(object):
                 log_event("player_hit")
                 print("Game over!")
+                name = input("Enter your name:")
+                score_manager.save(name)
                 sys.exit()
 
         for object in asteroids: # check collisions between shots and asteroids
             for shot in shots:
                 if shot.collides_with(object):
                     log_event("asteroid_shot")
+                    score_manager.sum_points(object)
                     shot.kill() #It removes the "killed" object from all of its groups so that the engine stops updating and drawing it.
                     object.split()
 
