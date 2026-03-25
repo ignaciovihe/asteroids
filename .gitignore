@@ -12,3 +12,6 @@ wheels/
 # logs
 game_state.jsonl
 game_events.jsonl
+
+# Ignore scores file
+scores.json
