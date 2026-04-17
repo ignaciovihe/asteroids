@@ -1,5 +1,6 @@
 import pygame
 import sys
+from ui import *
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from logger import log_state, log_event
 from player import Player
@@ -46,8 +47,12 @@ def main():
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
 
+    
+
     # Variable to control the main game loop
     running = True
+
+    state = "play"
 
     # Main game loop (each iteration = 1 frame)
     while running:
@@ -90,6 +95,7 @@ def main():
         for sprite in drawable: # we call draw() for every sprite within the group drawable.
             sprite.draw(screen)  
                                 # We cannot use drawable.draw() because Group.draw() does not call each sprite's draw() method.
+        draw_text(screen,f"SCORE: {score_manager.get_score()}", SCREEN_WIDTH - 150, 50 , 27, pygame.Color("blue"))
 
         # Update the display to show everything we just drew
         pygame.display.flip()
