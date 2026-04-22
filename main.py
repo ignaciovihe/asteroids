@@ -8,6 +8,32 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 from score_manager import ScoreManager
+from game_state import GameState
+
+def handle_game_over(event, name, state):
+    
+    if event.type != pygame.KEYDOWN:
+        return name, state
+    if event.key == pygame.K_RETURN:
+        state = GameState.ENTER_NAME
+    return name, state
+
+def handle_enter_name(event, name, state, score_manager): 
+
+    if event.type != pygame.KEYDOWN:
+        return name, state
+    
+    if event.unicode.isprintable():
+        name += event.unicode
+    elif event.key == pygame.K_BACKSPACE:
+        if name:
+            name = name[0:-1]
+    elif event.key == pygame.K_RETURN:
+        score_manager.save(name)
+        state = GameState.DISPLAY_SCORE
+        sys.exit()
+    return name, state
+
 
 def main():
     # Initialize Pygame (loads internal modules and prepares everything)
@@ -52,7 +78,11 @@ def main():
     # Variable to control the main game loop
     running = True
 
-    state = "play"
+    # Variable to control the state of the game
+    state = GameState.PLAYING
+
+    # The name of the player
+    name = ""
 
     # Main game loop (each iteration = 1 frame)
     while running:
@@ -64,42 +94,67 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
+            
+            if state == GameState.GAME_OVER:
+                name, state = handle_game_over(event, name, state)
+
+            elif state == GameState.ENTER_NAME:
+                name, state = handle_enter_name(event, name, state, score_manager)
+            
+
         
         # 2. Update game logic (move player, update asteroids, check collisions, etc.)
         #pass
         #player.update(dt) <-- Previous step withot groups
         updatable.update(dt)
 
-        for object in asteroids: # check collisions between player and asteroids
-            if player.collides_with(object):
-                log_event("player_hit")
-                print("Game over!")
-                name = input("Enter your name:")
-                score_manager.save(name)
-                sys.exit()
 
-        for object in asteroids: # check collisions between shots and asteroids
-            for shot in shots:
-                if shot.collides_with(object):
-                    log_event("asteroid_shot")
-                    score_manager.sum_points(object)
-                    shot.kill() #It removes the "killed" object from all of its groups so that the engine stops updating and drawing it.
-                    object.split()
+        if state == GameState.PLAYING:
+            for object in asteroids: # check collisions between player and asteroids
+                if player.collides_with(object):
+                    log_event("player_hit")
+                    state = GameState.GAME_OVER
+
+        if state == GameState.PLAYING:
+            for object in asteroids: # check collisions between shots and asteroids
+                for shot in shots:
+                    if shot.collides_with(object):
+                        log_event("asteroid_shot")
+                        score_manager.sum_points(object)
+                        shot.kill() #It removes the "killed" object from all of its groups so that the engine stops updating and drawing it.
+                        object.split()
 
         # 3. Draw everything on the screen (background, player, asteroids, etc.)
         # Fill the entire screen with black
         screen.fill("black")
 
-        #Draw de player as a triangle.
-        #player.draw(screen) <-- Previous step withot groups
-        for sprite in drawable: # we call draw() for every sprite within the group drawable.
-            sprite.draw(screen)  
-                                # We cannot use drawable.draw() because Group.draw() does not call each sprite's draw() method.
-        draw_text(screen,f"SCORE: {score_manager.get_score()}", SCREEN_WIDTH - 150, 50 , 27, pygame.Color("blue"))
+        if state == GameState.PLAYING:
+            #Draw de player as a triangle.
+            #player.draw(screen) <-- Previous step withot groups
+            for sprite in drawable: # we call draw() for every sprite within the group drawable.
+                sprite.draw(screen)  
+                                    # We cannot use drawable.draw() because Group.draw() does not call each sprite's draw() method.
+            draw_text(screen, f"SCORE: {score_manager.get_score()}", "topright", SCREEN_WIDTH - 10, 10, 27, pygame.Color("blue"))
+
+        if state == GameState.GAME_OVER:
+            score = f"SCORE: {score_manager.get_score()}"
+            draw_text(screen, "GAME OVER", "center", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 10, 37, pygame.Color("blue"))
+            draw_text(screen, score, "center",SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 10, 27, pygame.Color("blue"))
+            draw_text(screen, "Press ENTER to continue", "center",SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 30, 27, pygame.Color("blue"))
+
+        if state == GameState.ENTER_NAME:
+            draw_text(screen, "ENTER YOUR NAME:", "center", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 10, 37, pygame.Color("blue"))
+            draw_text(screen, name, "center",SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 10, 27, pygame.Color("blue"))
+
+            
 
         # Update the display to show everything we just drew
         pygame.display.flip()
 
+        # if state == GameState.GAME_OVER:
+        #     name = input("Enter your name:")
+        #     score_manager.save(name)
+        #     sys.exit()
 
         # 4. Control FPS
         miliseconds = clock.tick(60) # Time (in ms) of the last frame; limits the game to 60 FPS
