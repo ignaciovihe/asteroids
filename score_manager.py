@@ -6,6 +6,8 @@ class ScoreManager():
     def __init__(self):
         self.score = 0
 
+    def reset(self):
+        self.score = 0
 
     def sum_points(self, asteroid :Asteroid):
         if asteroid.radius == 60:
@@ -19,6 +21,20 @@ class ScoreManager():
 
     def get_score(self):
         return self.score
+    
+    def get_ranking(self):
+
+        scores_path = "scores.json"
+
+        try:
+            with open(scores_path, "r") as f:
+                data = json.load(f)
+                sorted_data = sorted(data, key=lambda item: item["score"], reverse=True)
+                return sorted_data
+            
+        except(FileNotFoundError, json.JSONDecodeError):
+            return None
+
 
     def save(self, name):
         

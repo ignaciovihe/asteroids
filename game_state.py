@@ -5,3 +5,5 @@ class GameState(Enum):
     GAME_OVER = "game_over"
     ENTER_NAME = "enter_name"
     DISPLAY_SCORE = "display_score"
+    EXIT = "exit"
+    RESET = "reset"
